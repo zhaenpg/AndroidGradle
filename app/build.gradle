@@ -1,0 +1,266 @@
+
+class LibExtension{
+    String version
+    String message
+}
+//LibExtension{
+//    version = '1.0'
+//    message = "version 1.0"
+//}
+
+//创建一个插件
+class LibPlugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project project) {
+        println "this is lib plugin"
+        //创建一个extension
+        project.extensions.create('libConfig',LibExtension)
+
+        //使用
+        project.tasks.create('libTask',{
+            doLast {
+                LibExtension libExtension = project.libConfig
+                println libExtension.version
+                println libExtension.message
+            }
+        })
+    }
+}
+
+//原来的apply plugin 改为id 形式引用
+//apply from则可以按原来的方法引用
+plugins {
+    //这个插件，表示当前应用是一个主程序，对应的com.android.library则表示是一个库程序
+    //提供了android{}进行项目配置
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.pipw.plugins' //应用自定义插件
+}
+
+android {
+    compileSdk 32
+
+    //默认配置，对所有variants生效
+    defaultConfig {
+        applicationId "com.pipw.androidgradle"
+        minSdk 21
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        //用于配置该BuildType是否启用自动拆分多个Dex的功能
+//        multiDexEnabled = true
+//        //多平台编译，生成有so包的时候使用，包括四个平台'armeabi', 'x86', 'armeabi-v7a', 'mips'。
+//        // 一般使用第三方提供的SDK的时候，可能会附带so库
+//        ndk {
+////            abiFilters  "armeabi", "x86", "armeabi-v7a", "mips"
+//        }
+    }
+
+    //源代码集合，是Java插件用来描述和管理源代码及资源的一个抽象概念，是一个Java源代码文件和资源文件的集合，
+    // 我们可以通过sourceSets更改源集的Java目录或者资源目录等
+//    sourceSets {
+//
+//    }
+
+    //构建类型，可添加多个
+    //默认会有一个debug的类型
+    //也可以覆盖重写
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //指明签名配置
+            //以下这些是kts语法，需要改为groovy语法
+//            signingConfigs {
+//
+//            }
+//            //是否移除无用资源
+//            isShrinkResources = true
+//            multiDexEnabled = true //是否拆成多个dex
+//            //multiDexKeepFile //指定文本文件编译进主Dex文件中
+//            //multiDexKeepProguard //指定混淆文件编译进主Dex文件中
+//            manifestPlaceholders["AppId"] = "123445" //占位符，我们可以通过它动态配置AndroidManifest文件一些内容，譬如app的名字
+//            buildConfigField("String", "BaseUrl", "www.sss.com") //
+        }
+    }
+    //声明了不同的特色版本
+//    productFlavors{
+
+//        free{
+//            //会覆盖defaultConfig中的配置
+//            applicationId "com.pipw.androidgradle.free"
+//        }
+//        paid{
+//            applicationId "com.pipw.androidgradle.paid"
+//        }
+//    }
+    //debug调试时，关闭png压缩，加快构建速度
+    if (project.hasProperty("devBuild")){
+        aaptOptions.cruncherEnabled = false
+    }
+
+    //指定java的版本
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    //指定输出的apk包名
+//    applicationVariants.all {
+//        outputs.all {
+//            if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
+//                this.outputFileName = "ProjectName${versionName}${flavorName}.apk"
+//            }
+//        }
+//    }
+
+}
+
+dependencies {
+    /**
+     * implementation（对应旧版的compile）作用是 依赖项在编译时对模块可用，并且仅在运行时对模块的消费者（则依赖该模块的其它模块）可用
+     * api（对应旧版的compile） 作用是依赖项在编译时对模块可用，在编译时和运行时对模块的消费者可用。
+     * compileOnly（对应旧版的provided） 作用是依赖项仅在编译时对模块可用，并且在编译或运行时对其消费者不可用
+     * runtimeOnly（对应于旧版的apk） 作用是依赖项仅在运行时对模块及其消费者可用
+     * */
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //依赖其它模块的写法
+//    implementation project(":otherModule")
+}
+
+// start
+// --- Initialization阶段可以进行的监听 ---
+//获取配置完毕的setting对象
+gradle.settingsEvaluated {
+
+}
+
+//获取已创建的Project对象
+gradle.projectsLoaded {
+
+}
+// --- Initialization阶段可以进行的监听 ---
+// end
+
+// start
+// --- Configuration阶段（执行build.gradle）可以进行的监听 ---
+//以下两个方法，7.3.3这个版本没有了
+//TODO：需查阅文档改为了什么方法
+//Build script 执行前调用
+//gradle.beforeEvaluate{
+//
+//}
+//Build script 执行后调用
+//gradle.afterEvaluate{
+//
+//}
+
+//所有项目配置结束后
+gradle.projectsEvaluated {
+
+}
+// --- Configuration阶段可以进行的监听 ---
+// end
+
+// start
+// --- Execution阶段可以进行的监听 ---
+
+gradle.buildFinished {
+
+}
+// 定义一个打印项目的方法
+def printProject(pj) {
+    println("===============")
+    println("获取项目信息：")
+    println("项目名：" + pj.name)
+    println("路径：" + pj.path)
+    println("项目说明：" + pj.description)
+    println("包含构建脚本的目录：" + pj.projectDir)
+    println("生成文件目录：" + pj.buildDir)
+    println("属于哪个组：" + pj.group)
+    println("版本：" + pj.version)
+}
+
+// 获取所有项目信息
+def getAllProjectInfo() {
+    // 根项目
+    printProject(project)
+    // 所有子项目，调用getAllprojects()可获得所有项目，即包含根项目
+    this.getSubprojects().eachWithIndex { Project entry, int i ->
+        printProject(entry)
+    }
+}
+
+
+// --- Execution阶段可以进行的监听 ---
+// end
+
+//task的创建
+def task1 = task("task1")
+
+task1.doFirst {
+    println "task1  --- 执行之前 --- "
+}
+
+task1.doLast {
+    println "task1 --- 执行之后 --- "
+}
+
+//指定分组创建
+def task2 = task(group: "group1", "task2")
+
+task2.doFirst {
+    println "任务 ；" + name + " 属于分组：" + task2.group
+}
+
+
+//闭包方式创建
+task task3 {
+    group("group1") //指定所属分组
+    description("this is task3")
+    doLast {
+        println " task3 doLast -----------"
+    }
+}
+//指定执行顺序
+task3.shouldRunAfter(task2)
+
+//自定义task
+//class CustomTask extends DefaultTask {
+//
+//    //该注解表示Task要执行的方法
+//    @TaskAction
+//    def doSomething() {
+//        println " CustomTask 执行 domSomething"
+//    }
+//
+//
+//}
+//
+//task(type: CustomTask, "task4") {
+//    doFirst {}
+//    doLast {}
+//}
+
+task findTask {
+    //查找task的相关方法
+    tasks.findByPath(":task1") //找不到会返回null
+    tasks.findByName(":task1")
+
+//    tasks.getByPath(":task1") //找不到会抛出异常
+//    tasks.getByName(":task1")
+}

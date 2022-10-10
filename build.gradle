@@ -1,0 +1,51 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// 由于Android中使用的是Gradle Wrapper
+// 所以在Android Studio 中执行gradle命令，使用的是 ./gradlew xxx  (win系统下)
+// 当前项目下，各gradle相关文件的意义如下：
+//  1.gradle目录下各文件意义是：
+//      1.gradle-wrapper.jar：用于下载需要的gradle
+//      2.gradle-wrapper.properties：gradle的配置文件（具体说明可打开该文件查看相应注释）
+//  3.项目根目录下的build.gradle：配置所有模块通用的配置信息
+//  4.各个模块下的build.gradle（如app目录下）：当前模块下的配置信息
+//  5.setting.gradle：指定需要参与编译的模块，每一个模块都会生成一个project对象
+//  6. .gradle、.idea：为项目生成的缓存配置文件
+//  7.gradle.properties：gradle的属性配置文件
+//  8.local.properties：填写本地SDK、NDK的位置
+//  2.gradlew：linux环境下的可执行脚本
+//  3.gradlew.bat：windows环境下的可执行脚本
+//  需要注意的是，不同的Gradle版本会对应一个Daemon进程，需要占用pc的内存运行空间
+//  所以需要尽量避免使用过多的gradle版本
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url uri('./pluginPkgs')
+        }
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:4.2.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+        classpath "com.pipw:plugins:1.0.0"
+        //对应写法 = 声明的group:插件module:声明的版本
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { setUrl("https://jitpack.io")
+        }
+        maven {
+            url uri('./plugins')
+        }
+
+    }
+}
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

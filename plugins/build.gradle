@@ -1,0 +1,60 @@
+plugins {
+    id 'java-library'
+    id 'groovy' // Groovy Language
+    id 'org.jetbrains.kotlin.jvm' // Kotlin
+    id 'java-gradle-plugin'
+    id 'maven' //发布插件配置，7.0以下用这个，7.0以上好像用maven-publish
+    // Java Gradle Plugin  用于帮助开发 Gradle 插件，会自动应用 Java Library 插件，并在 dependencies 中添加 implementation gradleApi()。
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+sourceSets {
+    main {
+
+        groovy {
+            srcDir 'src/main/groovy'
+        }
+
+        java {
+            srcDir 'src/main/java'
+        }
+
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+dependencies {
+    implementation("com.android.tools.build:gradle:4.2.0")
+    compileOnly("commons-io:commons-io:2.6")
+    compileOnly("commons-codec:commons-codec:1.15")
+    compileOnly("org.ow2.asm:asm-commons:9.2")
+    compileOnly("org.ow2.asm:asm-tree:9.2")
+}
+
+//定义插件 ID 和插件实现类的映射关系
+//会自动帮我们创建一个 [插件ID].properties 配置文件
+//与手动创建 [插件ID].properties 文件，作用是完全一样的
+gradlePlugin {
+    plugins{
+
+        modularPlugin{
+            id = 'com.pipw.plugins'
+            implementationClass = 'com.pipw.plugins.timecost.TimeCostPlugin'
+        }
+    }
+}
+
+uploadArchives{
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../pluginPkgs')) //插件生成保存在本地，也可以替换为远程的maven地址
+            pom.groupId = 'com.pipw'
+            pom.artifactId = 'plugins'
+            pom.version = '1.0.0'
+        }
+    }
+}
