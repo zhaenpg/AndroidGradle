@@ -268,4 +268,5 @@
 [一文学会Android Gradle Transform基础使用]: https://juejin.cn/post/6914485867029463054
 [Android gradle 7.0+完整配置记录]: https://www.cnblogs.com/bg-tab/p/16303565.html
 [Gradle 系列（2）手把手带你自定义 Gradle 插件]: https://juejin.cn/post/7098383560746696718#heading-21
-
+[深入探索编译插桩技术（四、ASM 探秘）]: https://juejin.cn/post/6844904118700474375#heading-4Hunter
+[深入探索编译插桩技术（三、解密 JVM 字节码）]: https://juejin.cn/post/6844904116603486222

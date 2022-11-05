@@ -37,7 +37,6 @@ class TimeCostClassVisitor(nextVisitor: ClassVisitor, private val className: Str
                             "(Ljava/lang/String;Ljava/lang/String;)V",
                             false
                         )
-
                     }
                     super.onMethodEnter();
                 }
