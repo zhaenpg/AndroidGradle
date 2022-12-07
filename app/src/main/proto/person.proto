@@ -1,0 +1,18 @@
+//指定使用的proto版本
+syntax = "proto3";
+
+package proto;
+
+//指定生成类所在的Java包名
+option java_package = "com.example.demowork1";
+
+//生成的Java类名
+option java_outer_classname = "PersonProto";
+
+message Person{
+    string name = 1;
+    int32 id = 2;
+    bool boo = 3;
+    string email = 4;
+    string phone = 5;
+}
